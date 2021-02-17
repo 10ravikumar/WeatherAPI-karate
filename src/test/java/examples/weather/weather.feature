@@ -10,6 +10,19 @@ Feature: As a MetaWeather API client, I want to retrieve weather forecast histor
         return dS.getDateFormatValue(args);
       }
       """
+   Scenario: Retrieve the weather forecast history for a particular location & day.
+  
+    Given path 'location/search/'
+    And param query = 'Nottingham'
+    When method get
+    Then status 200
+    
+    * def earthId = response[0].woeid
+    * def date = call DateValue 'tomorrows'
+    
+    Given path 'location',earthId,date
+    When method get
+    Then status 200     
 
   Scenario Outline: Retrieve the weather forecast history for a particular location & day.
   
@@ -32,8 +45,9 @@ Feature: As a MetaWeather API client, I want to retrieve weather forecast histor
       | lattlong | 50.068,-5.316 | 2021/02/18 |
       | query    | Nottingham    | 2021/02/19 |
 
-  Scenario: Retrieve the weather forecast history for a particular location & day.
-  
+
+    
+  Scenario: Verify the weather api response fields size aganist json schema fields.
     Given path 'location/search/'
     And param query = 'Nottingham'
     When method get
@@ -45,3 +59,4 @@ Feature: As a MetaWeather API client, I want to retrieve weather forecast histor
     Given path 'location',earthId,date
     When method get
     Then status 200
+    Then match 14 == response[0].size()    
